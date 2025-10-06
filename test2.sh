@@ -5,7 +5,7 @@
 
 # Переменные
 PATTERN="WeekSchedule"
-DAYS=("Понедельник" "Вторник" "Среда" "Четверг" "Пятница" "Суббота" "Воскресенье")
+DAYS=("Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday")
 TIMETABLE_FILE="$HOME/Timetable_Ivanov"
 
 # 1. Создать 7 каталогов одной командой (в цикле через for)
