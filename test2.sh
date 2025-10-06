@@ -5,7 +5,7 @@
 
 # Переменные
 PATTERN="WeekSchedule"
-DAYS=("Monday" "Tuesday" "Wednesday" "Thursday" "Friday" "Saturday" "Sunday")
+DAYS=("Понедельник" "Вторник" "Среда" "Четверг" "Пятница" "Суббота" "Воскресенье")
 TIMETABLE_FILE="$HOME/Timetable_Ivanov"
 
 # 1. Создать 7 каталогов одной командой (в цикле через for)
@@ -18,28 +18,28 @@ for i in {1..7}; do
     touch "$dir/$day"
 done
 
-# Создать базовый файл daily_routine.txt с 20 строками рутинных действий (для случайного выбора в п.3)
+# Создать базовый файл daily_routine.txt с 20 строками рутинных действий на русском (для случайного выбора в п.3)
 cat > daily_routine.txt << EOF
-wake up
-have dinner
-get up
-have a shower
-brush your teeth
-go to work
-have lunch
-have breakfast
-do homework
-go home
-go to school
-go to bed
-Eat
-Sleep
-Dress
-Study
-Exercise
-Read
-Watch TV
-Cook
+проснуться
+поужинать
+встать
+принять душ
+почистить зубы
+пойти на работу
+пообедать
+позавтракать
+сделать домашнее задание
+пойти домой
+пойти в школу
+лечь спать
+Есть
+Спать
+Одежда
+Учиться
+Заниматься спортом
+Читать
+Смотреть телевизор
+Готовить
 EOF
 
 # 3. Для каждого файла дня недели: 16 раз случайно выбрать строку из daily_routine.txt и дописать
@@ -62,18 +62,22 @@ for i in {1..7}; do
     sort "$file" -o "$file"
 done
 
-# 5. Добавить в начало каждой строки время от 8:00 до 23:00 (используя массив часов и mapfile)
+# 5. Добавить в начало каждой строки время от 8:00 до 23:00 и выровнять по колонкам (используя printf и column)
 hours=($(seq -f "%g:00" 8 23))
 for i in {1..7}; do
     dir="$PATTERN$i"
     day="${DAYS[$((i-1))]}"
     file="$dir/$day"
     mapfile -t lines < "$file"
-    new_content=""
+    # Создать временный файл с временем и действиями
+    temp_file="${file}.tmp"
+    > "$temp_file"
     for k in {0..15}; do
-        new_content+="${hours[k]} ${lines[k]}\n"
+        printf "%s %s\n" "${hours[k]}" "${lines[k]}" >> "$temp_file"
     done
-    printf "%s" "$new_content" > "$file"
+    # Выровнять по колонкам (column -t для автоматического выравнивания)
+    column -t "$temp_file" > "$file"
+    rm "$temp_file"
 done
 
 # 6. Создать объединенный файл Timetable_Ivanov в домашней директории
@@ -82,7 +86,7 @@ for i in {1..7}; do
     dir="$PATTERN$i"
     day="${DAYS[$((i-1))]}"
     file="$dir/$day"
-    echo "File: $day from $dir" >> "$TIMETABLE_FILE"
+    echo "Файл: $day из $dir" >> "$TIMETABLE_FILE"
     cat "$file" >> "$TIMETABLE_FILE"
     echo "" >> "$TIMETABLE_FILE"  # Пустая строка
 done
