@@ -18,28 +18,28 @@ for i in {1..7}; do
     touch "$dir/$day"
 done
 
-# Создать базовый файл daily_routine.txt с 20 строками рутинных действий на русском (для случайного выбора в п.3)
+# Создать базовый файл daily_routine.txt с 20 строками рутинных действий (для случайного выбора в п.3)
 cat > daily_routine.txt << EOF
-проснуться
-поужинать
-встать
-принять душ
-почистить зубы
-пойти на работу
-пообедать
-позавтракать
-сделать домашнее задание
-пойти домой
-пойти в школу
-лечь спать
-Есть
-Спать
-Одежда
-Учиться
-Заниматься спортом
-Читать
-Смотреть телевизор
-Готовить
+wake up
+have dinner
+get up
+have a shower
+brush your teeth
+go to work
+have lunch
+have breakfast
+do homework
+go home
+go to school
+go to bed
+Eat
+Sleep
+Dress
+Study
+Exercise
+Read
+Watch TV
+Cook
 EOF
 
 # 3. Для каждого файла дня недели: 16 раз случайно выбрать строку из daily_routine.txt и дописать
@@ -62,22 +62,18 @@ for i in {1..7}; do
     sort "$file" -o "$file"
 done
 
-# 5. Добавить в начало каждой строки время от 8:00 до 23:00 и выровнять по колонкам (используя printf и column)
+# 5. Добавить в начало каждой строки время от 8:00 до 23:00 (используя массив часов и mapfile)
 hours=($(seq -f "%g:00" 8 23))
 for i in {1..7}; do
     dir="$PATTERN$i"
     day="${DAYS[$((i-1))]}"
     file="$dir/$day"
     mapfile -t lines < "$file"
-    # Создать временный файл с временем и действиями
-    temp_file="${file}.tmp"
-    > "$temp_file"
+    new_content=""
     for k in {0..15}; do
-        printf "%s %s\n" "${hours[k]}" "${lines[k]}" >> "$temp_file"
+        new_content+="${hours[k]} ${lines[k]}\n"
     done
-    # Выровнять по колонкам (column -t для автоматического выравнивания)
-    column -t "$temp_file" > "$file"
-    rm "$temp_file"
+    printf "%s" "$new_content" > "$file"
 done
 
 # 6. Создать объединенный файл Timetable_Ivanov в домашней директории
@@ -86,7 +82,7 @@ for i in {1..7}; do
     dir="$PATTERN$i"
     day="${DAYS[$((i-1))]}"
     file="$dir/$day"
-    echo "Файл: $day из $dir" >> "$TIMETABLE_FILE"
+    echo "File: $day from $dir" >> "$TIMETABLE_FILE"
     cat "$file" >> "$TIMETABLE_FILE"
     echo "" >> "$TIMETABLE_FILE"  # Пустая строка
 done
